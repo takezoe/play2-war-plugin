@@ -4,7 +4,7 @@ import java.io.File
 
 object Build extends Build {
 
-  val play2Version = "2.0.1"
+  val play2Version = "2.1-SNAPSHOT"
 
   val cloudbees = "https://repository-play-war.forge.cloudbees.com/"
   val curDir = new File(".")
@@ -53,7 +53,7 @@ object Build extends Build {
       // version is defined in version.sbt in order to support sbt-release
       scalacOptions ++= Seq("-unchecked", "-deprecation"),
       resolvers += ("Typsafe releases" at "http://repo.typesafe.com/typesafe/releases/"),
-//      publishTo := Some(Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish")) ),
+      publishTo := Some(Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish")) ),
 //      publishTo <<= (version) {
 //		version: String =>
 //		  if (version.trim.endsWith("SNAPSHOT")) Some("snapshot" at cloudbees + "snapshot/")

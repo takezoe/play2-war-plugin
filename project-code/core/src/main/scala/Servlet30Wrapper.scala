@@ -1,4 +1,4 @@
-package play.core.server.servlet
+/*package play.core.server.servlet
 
 import javax.servlet._
 import javax.servlet.annotation._
@@ -210,7 +210,7 @@ class Servlet30Wrapper extends HttpServlet with ServletContextListener with Help
         val eventuallyResultOrBody =
           eventuallyBodyParser.flatMap { bodyParser =>
 
-            requestHeader.headers.get("Expect") match {
+/*            requestHeader.headers.get("Expect") match {
               case Some("100-continue") => {
                 bodyParser.fold(
                   (_, _) => Promise.pure(()),
@@ -223,7 +223,7 @@ class Servlet30Wrapper extends HttpServlet with ServletContextListener with Help
 
               }
               case _ => Logger("play").trace("Expect header:" + requestHeader.headers.get("Expect"))
-            }
+            }*/
 
             lazy val bodyEnumerator = {
               val body = Stream.continually(aSyncContext.getRequest.getInputStream.read).takeWhile(-1 !=).map(_.toByte).toArray
@@ -315,4 +315,4 @@ class Servlet30Wrapper extends HttpServlet with ServletContextListener with Help
         sc.log("Play server stopped")
     } // if playServer is null, nothing to do
   }
-}
+}*/
