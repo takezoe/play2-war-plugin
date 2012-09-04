@@ -19,6 +19,7 @@ trait Play2WarSettings {
     },
     
     resolvers ++= Seq("Play2war plugin" at "http://repository-play-war.forge.cloudbees.com/release/"),
+    resolvers ++= Seq("Play2war plugin snapshot" at "http://repository-play-war.forge.cloudbees.com/snapshot/"),
 
     webappResource <<= baseDirectory / "war",
 
