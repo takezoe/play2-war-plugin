@@ -357,13 +357,14 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
   }
 
   protected def getHttpParameters(request: HttpServletRequest): Map[String, Seq[String]] = {
+    val encoding = Option(request.getCharacterEncoding).getOrElse("UTF-8")
     request.getQueryString match {
       case null | "" => Map.empty
       case queryString => queryString.replaceFirst("^?", "").split("&").map(_.split("=")).map { array =>
         array.length match {
           case 0 => None
-          case 1 => Some(URLDecoder.decode(array(0), "UTF-8") -> "")
-          case _ => Some(URLDecoder.decode(array(0), "UTF-8") -> URLDecoder.decode(array(1), "UTF-8"))
+          case 1 => Some(URLDecoder.decode(array(0), encoding) -> "")
+          case _ => Some(URLDecoder.decode(array(0), encoding) -> URLDecoder.decode(array(1), encoding))
         }
       }.flatten.groupBy(_._1).map { case (key, value) => key -> value.map(_._2).toSeq }.toMap
     }
