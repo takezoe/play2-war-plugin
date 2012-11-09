@@ -67,6 +67,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
    */
   protected override def service(servletRequest: HttpServletRequest, servletResponse: HttpServletResponse) = {
     Logger("play").trace("HTTP request received: " + servletRequest)
+    servletRequest.setCharacterEncoding("UTF-8")
 
     val execContext: T = onBeginService(servletRequest, servletResponse)
 
