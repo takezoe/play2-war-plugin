@@ -15,14 +15,15 @@ trait Play2WarSettings {
         case "2.5" => "25"
         case _ => "30"
       }
-      Seq("com.github.play2war" %% ("play2-war-core-servlet" + servletVersionString) % com.github.play2war.plugin.Play2WarVersion.current)
+      Seq("jp.sf.amateras.play2war" %% ("play2-war-core-servlet" + servletVersionString) % com.github.play2war.plugin.Play2WarVersion.current)
     },
     
     resolvers ++= Seq(
       // Releases
-      "Play2war plugin" at "http://repository-play-war.forge.cloudbees.com/release/",
-      // Snapshots
-      Resolver.url("Play2war plugin snapshot", url("http://repository-play-war.forge.cloudbees.com/snapshot/"))(Resolver.ivyStylePatterns)),
+      "Play2war plugin" at "http://amateras.sourceforge.jp/mvn/"
+      // // Snapshots
+      // Resolver.url("Play2war plugin snapshot", url("http://repository-play-war.forge.cloudbees.com/snapshot/"))(Resolver.ivyStylePatterns)
+    ),
 
     webappResource <<= baseDirectory / "war",
 
