@@ -83,25 +83,27 @@ object Build extends Build {
       // Snapshots : Ivy style
       // Releases : Maven style
 
-      publishTo <<= (version) {
-        version: String =>
-          val repo = {
-      	    if (version.trim.endsWith("SNAPSHOT")) {
-              // Cloudbees repo
-              Resolver.url("snapshot",  url(cloudbees + "snapshot/"))(Resolver.ivyStylePatterns)
+      publishTo := Some(Resolver.ssh("amateras-repo-scp", "shell.sourceforge.jp", "/home/groups/a/am/amateras/htdocs/mvn/") withPermissions("0664")
+        as(System.getProperty("user.name"), new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa"))),
+      // publishTo <<= (version) {
+      //   version: String =>
+      //     val repo = {
+      // 	    if (version.trim.endsWith("SNAPSHOT")) {
+      //         // Cloudbees repo
+      //         Resolver.url("snapshot",  url(cloudbees + "snapshot/"))(Resolver.ivyStylePatterns)
 
-              // To deploy locally with Ivy style
-              // Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))(Resolver.ivyStylePatterns)
-            } else {
-              // Cloudbees repo
-              Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))
-            }
-          }
-          Some(repo)
-      },
-      
-      credentials += Credentials(file("/private/play-war/.credentials")),
-      credentials += Credentials(file(Path.userHome.absolutePath + "/.ivy2/.credentials")),
+      //         // To deploy locally with Ivy style
+      //         // Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))(Resolver.ivyStylePatterns)
+      //       } else {
+      //         // Cloudbees repo
+      //         Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))
+      //       }
+      //     }
+      //     Some(repo)
+      // },
+
+      // credentials += Credentials(file("/private/play-war/.credentials")),
+      // credentials += Credentials(file(Path.userHome.absolutePath + "/.ivy2/.credentials")),
       
       publishMavenStyle <<= (version) {
         version: String =>
@@ -111,8 +113,8 @@ object Build extends Build {
 
   object BuildSettings {
 
-    val buildOrganization = "com.github.play2war"
-    val defaultPlay2Version = "2.0.2"
+    val buildOrganization = "jp.sf.amateras.play2war"
+    val defaultPlay2Version = "2.0.1"
     val play2Version = Option(System.getProperty("play2.version")).filterNot(_.isEmpty).getOrElse(defaultPlay2Version)
     val buildVersion = "0.8.1"
 

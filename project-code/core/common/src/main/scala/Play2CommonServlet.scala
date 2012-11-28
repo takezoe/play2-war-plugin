@@ -85,7 +85,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
     def rRemoteAddress = {
       val remoteAddress = servletRequest.getRemoteAddr
       (for {
-        xff <- rHeaders.get(X_FORWARDED_FOR)
+        xff <- rHeaders.get("X-Forwarded-For")
         app <- server.applicationProvider.get.right.toOption
         trustxforwarded <- app.configuration.getBoolean("trustxforwarded").orElse(Some(false))
         if remoteAddress == "127.0.0.1" || trustxforwarded
