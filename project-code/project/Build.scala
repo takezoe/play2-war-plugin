@@ -83,7 +83,7 @@ object Build extends Build {
       // Snapshots : Ivy style
       // Releases : Maven style
 
-      publishTo := Some(Resolver.ssh("amateras-repo-scp", "shell.sourceforge.jp", "/home/groups/a/am/amateras/htdocs/ivy/") withPermissions("0664")
+      publishTo := Some(Resolver.ssh("amateras-repo-scp", "shell.sourceforge.jp", "/home/groups/a/am/amateras/htdocs/ivy/") (Resolver.ivyStylePatterns) withPermissions("0664")
         as(System.getProperty("user.name"), new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa"))),
       // publishTo <<= (version) {
       //   version: String =>
