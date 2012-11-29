@@ -83,7 +83,7 @@ object Build extends Build {
       // Snapshots : Ivy style
       // Releases : Maven style
 
-      publishTo := Some(Resolver.ssh("amateras-repo-scp", "shell.sourceforge.jp", "/home/groups/a/am/amateras/htdocs/mvn/") withPermissions("0664")
+      publishTo := Some(Resolver.ssh("amateras-repo-scp", "shell.sourceforge.jp", "/home/groups/a/am/amateras/htdocs/ivy/") withPermissions("0664")
         as(System.getProperty("user.name"), new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa"))),
       // publishTo <<= (version) {
       //   version: String =>
@@ -105,11 +105,8 @@ object Build extends Build {
       // credentials += Credentials(file("/private/play-war/.credentials")),
       // credentials += Credentials(file(Path.userHome.absolutePath + "/.ivy2/.credentials")),
       
-      publishMavenStyle <<= (version) {
-        version: String =>
-          if (version.trim.endsWith("SNAPSHOT")) false
-          else                                   true
-      })
+      publishMavenStyle := false
+    )
 
   object BuildSettings {
 
