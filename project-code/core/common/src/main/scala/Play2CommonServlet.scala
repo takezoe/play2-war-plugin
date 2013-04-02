@@ -301,7 +301,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
 
         lazy val bodyEnumerator = getHttpRequest(execContext).getRichInputStream.map { is =>
           val output = new java.io.ByteArrayOutputStream()
-          val buffer = new Array[Byte](1024 * 8)
+          val buffer = new Array[Byte](10 * 1024 * 1024)
           var length = is.read(buffer)
           while(length != -1){
             output.write(buffer, 0, length)
