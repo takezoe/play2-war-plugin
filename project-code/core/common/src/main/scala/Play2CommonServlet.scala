@@ -307,7 +307,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
             output.write(buffer, 0, length)
             length = is.read(buffer)
           }
-          Enumerator(output.toByteArray)andThen(Enumerator.eof)
+          Enumerator.fromStream(new ByteArrayInputStream(output.toByteArray), 10 * 1024 * 1024)andThen(Enumerator.eof)
         }.getOrElse(Enumerator.eof)
 
         val eventuallyResultOrBody = eventuallyBodyParser.flatMap(it =>
