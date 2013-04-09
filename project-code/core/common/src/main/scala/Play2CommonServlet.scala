@@ -176,7 +176,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
                   }
                 }
 
-                body(bodyIteratee)
+                body.andThen(Enumerator.eof)(bodyIteratee)
               }.getOrElse {
                 Logger("play").trace("Result without Content-length")
 

@@ -6,6 +6,7 @@ import play.api.Logger
 import play.core.server.servlet.GenericPlay2Servlet
 import play.core.server.servlet.RichHttpServletRequest
 import play.core.server.servlet.RichHttpServletResponse
+import java.util.concurrent.atomic.AtomicBoolean
 
 object Play2Servlet {
 
@@ -18,21 +19,24 @@ object Play2Servlet {
 class Play2Servlet extends GenericPlay2Servlet[Tuple3[HttpServletRequest, HttpServletResponse, Object]] with Helpers {
 
   protected override def onBeginService(request: HttpServletRequest, response: HttpServletResponse): Tuple3[HttpServletRequest, HttpServletResponse, Object] = {
-    (request, response, new Object())
+     (request, response, new AtomicBoolean(false))
   }
 
   protected override def onFinishService(execContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]) = {
     execContext._3.synchronized {
-      execContext._3.wait(Play2Servlet.syncTimeout)
+      if(!execContext._3.asInstanceOf[AtomicBoolean].get){
+        execContext._3.wait(Play2Servlet.syncTimeout)
+      }
     }
   }
-
+  
   protected override def onHttpResponseComplete(execContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]) = {
     execContext._3.synchronized {
+      execContext._3.asInstanceOf[AtomicBoolean].set(true)
       execContext._3.notify()
     }
   }
-
+  
   protected override def getHttpRequest(executionContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]): RichHttpServletRequest = {
     new RichHttpServletRequest {
       def getRichInputStream(): Option[java.io.InputStream] = {
@@ -40,16 +44,16 @@ class Play2Servlet extends GenericPlay2Servlet[Tuple3[HttpServletRequest, HttpSe
       }
     }
   }
-
+  
   protected override def getHttpResponse(executionContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]): RichHttpServletResponse = {
     new RichHttpServletResponse {
-      def getRichOutputStream: Option[java.io.OutputStream] = {
-        Option(executionContext._2.getOutputStream)
-      }
-
-      def getHttpServletResponse: Option[HttpServletResponse] = {
-        Option(executionContext._2)
-      }
+        def getRichOutputStream: Option[java.io.OutputStream] = {
+          Option(executionContext._2.getOutputStream)
+        }
+  
+        def getHttpServletResponse: Option[HttpServletResponse] = {
+          Option(executionContext._2)
+        }
     }
   }
 
