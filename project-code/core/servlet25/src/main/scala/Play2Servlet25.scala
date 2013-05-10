@@ -25,7 +25,26 @@ class Play2Servlet extends GenericPlay2Servlet[Tuple3[HttpServletRequest, HttpSe
   protected override def onFinishService(execContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]) = {
     execContext._3.synchronized {
       if(!execContext._3.asInstanceOf[AtomicBoolean].get){
+        val start = System.currentTimeMillis
         execContext._3.wait(Play2Servlet.syncTimeout)
+        val end = System.currentTimeMillis
+        if(Play2Servlet.syncTimeout > 0 && end - start >= Play2Servlet.syncTimeout){
+          val req = execContext._1
+          println("***********************************************************************")
+          println("[Timeout]" + new java.util.Date().toString())
+          println("method: " + req.getMethod)
+          println("requestURI: " + req.getRequestURI)
+          println("requestURL: " + req.getRequestURL.toString)
+          println("querySring: " + req.getQueryString)
+          println("headers:")
+          val e = req.getHeaderNames()
+          while(e.hasMoreElements){
+            val name  = e.nextElement
+            val value = req.getHeader(name)
+            println("  %s: %s".format(name, value))
+          }
+          println("***********************************************************************")
+        }
       }
     }
   }
