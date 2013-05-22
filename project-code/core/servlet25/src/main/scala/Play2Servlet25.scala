@@ -6,7 +6,9 @@ import play.api.Logger
 import play.core.server.servlet.GenericPlay2Servlet
 import play.core.server.servlet.RichHttpServletRequest
 import play.core.server.servlet.RichHttpServletResponse
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.ArrayBlockingQueue
 
 object Play2Servlet {
 
@@ -19,41 +21,34 @@ object Play2Servlet {
 class Play2Servlet extends GenericPlay2Servlet[Tuple3[HttpServletRequest, HttpServletResponse, Object]] with Helpers {
 
   protected override def onBeginService(request: HttpServletRequest, response: HttpServletResponse): Tuple3[HttpServletRequest, HttpServletResponse, Object] = {
-    (request, response, new AtomicBoolean(false))
+    (request, response, new ArrayBlockingQueue[String](1))
   }
 
   protected override def onFinishService(execContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]) = {
-    execContext._3.synchronized {
-      if(!execContext._3.asInstanceOf[AtomicBoolean].get){
-        val start = System.currentTimeMillis
-        execContext._3.wait(Play2Servlet.syncTimeout)
-        val end = System.currentTimeMillis
-        if(Play2Servlet.syncTimeout > 0 && end - start >= Play2Servlet.syncTimeout){
-          val req = execContext._1
-          println("***********************************************************************")
-          println("[Timeout]" + new java.util.Date().toString())
-          println("method: " + req.getMethod)
-          println("requestURI: " + req.getRequestURI)
-          println("requestURL: " + req.getRequestURL.toString)
-          println("querySring: " + req.getQueryString)
-          println("headers:")
-          val e = req.getHeaderNames()
-          while(e.hasMoreElements){
-            val name  = e.nextElement
-            val value = req.getHeader(name)
-            println("  %s: %s".format(name, value))
-          }
-          println("***********************************************************************")
-        }
+    val start = System.currentTimeMillis
+    execContext._3.asInstanceOf[BlockingQueue[String]].poll(Play2Servlet.syncTimeout, TimeUnit.MILLISECONDS)
+    val end = System.currentTimeMillis
+    if(Play2Servlet.syncTimeout > 0 && end - start >= Play2Servlet.syncTimeout){
+      val req = execContext._1
+      println("***********************************************************************")
+      println("[Timeout]" + new java.util.Date().toString())
+      println("method: " + req.getMethod)
+      println("requestURI: " + req.getRequestURI)
+      println("requestURL: " + req.getRequestURL.toString)
+      println("querySring: " + req.getQueryString)
+      println("headers:")
+      val e = req.getHeaderNames()
+      while(e.hasMoreElements){
+        val name  = e.nextElement
+        val value = req.getHeader(name)
+        println("  %s: %s".format(name, value))
       }
+      println("***********************************************************************")
     }
   }
 
   protected override def onHttpResponseComplete(execContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]) = {
-    execContext._3.synchronized {
-      execContext._3.asInstanceOf[AtomicBoolean].set(true)
-      execContext._3.notify()
-    }
+    execContext._3.asInstanceOf[BlockingQueue[String]].put("completed")
   }
 
   protected override def getHttpRequest(executionContext: Tuple3[HttpServletRequest, HttpServletResponse, Object]): RichHttpServletRequest = {
