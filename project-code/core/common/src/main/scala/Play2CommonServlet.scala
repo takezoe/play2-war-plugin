@@ -299,7 +299,7 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
             }
           }
 
-        lazy val bodyEnumerator = getHttpRequest(execContext).getRichInputStream.map { is =>
+        val bodyEnumerator = getHttpRequest(execContext).getRichInputStream.map { is =>
           val buffer = new Array[Byte](8 * 1024)
           val chunks = new scala.collection.mutable.ListBuffer[Array[Byte]]()
           var length = is.read(buffer)
