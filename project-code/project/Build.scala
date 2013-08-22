@@ -113,7 +113,7 @@ object Build extends Build {
     val buildOrganization = "jp.sf.amateras.play2war"
     val defaultPlay2Version = "2.0.1"
     val play2Version = Option(System.getProperty("play2.version")).filterNot(_.isEmpty).getOrElse(defaultPlay2Version)
-    val buildVersion = "0.8.1-5"
+    val buildVersion = "0.8.1-6"
 
     val buildSettings = Defaults.defaultSettings ++ Seq(
       organization := buildOrganization,
