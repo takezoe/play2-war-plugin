@@ -375,7 +375,11 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
             case e: Exception => None
           }
           case _ => try {
-            Some(URLDecoder.decode(array(0), "UTF-8") -> URLDecoder.decode(array(1), "UTF-8"))
+            Some(URLDecoder.decode(array(0), "UTF-8") -> (try {
+              URLDecoder.decode(array(1), "UTF-8")
+            } catch {
+              case e: Exception => ""
+            }))
           } catch {
             case e: Exception => None
           }
