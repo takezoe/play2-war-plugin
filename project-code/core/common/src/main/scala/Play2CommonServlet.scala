@@ -369,8 +369,16 @@ abstract class GenericPlay2Servlet[T] extends HttpServlet with ServletContextLis
       case queryString => queryString.replaceFirst("^?", "").split("&").map(_.split("=")).map { array =>
         array.length match {
           case 0 => None
-          case 1 => Some(URLDecoder.decode(array(0), "UTF-8") -> "")
-          case _ => Some(URLDecoder.decode(array(0), "UTF-8") -> URLDecoder.decode(array(1), "UTF-8"))
+          case 1 => try {
+            Some(URLDecoder.decode(array(0), "UTF-8") -> "")
+          } catch {
+            case e: Exception => None
+          }
+          case _ => try {
+            Some(URLDecoder.decode(array(0), "UTF-8") -> URLDecoder.decode(array(1), "UTF-8"))
+          } catch {
+            case e: Exception => None
+          }
         }
       }.flatten.groupBy(_._1).map { case (key, value) => key -> value.map(_._2).toSeq }.toMap
     }
